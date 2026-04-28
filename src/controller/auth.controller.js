@@ -1,7 +1,7 @@
 /* eslint-disable no-useless-return */
 import { userServices } from '../services/user.services.js';
 import { emailServices } from '../services/email.services.js';
-import { jwtService } from '../services/jwt.services.js';
+import { jwtServices } from '../services/jwt.services.js';
 import bcrypt, { compare } from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from '../models/User.model.js';
@@ -124,13 +124,12 @@ const loginUser = async (req, res) => {
   }
 
   await generateTokens(res, user);
-  res.redirect('/profile');
 };
 
 const refresh = (req, res) => {
   const { refreshToken } = req.cookies;
 
-  const user = jwtService.verifyRefresh(refreshToken);
+  const user = jwtServices.verifyRefresh(refreshToken);
 
   if (!user) {
     res.sendStatus(401);
@@ -142,9 +141,9 @@ const refresh = (req, res) => {
 };
 
 const generateTokens = async (res, user) => {
-  const normilizeUser = userServices.normilizeUser(user);
-  const accessToken = jwtService.sign(normilizeUser);
-  const refreshToken = jwtService.signRefresh(normilizeUser);
+  const normalizeUser = userServices.normalizeUser(user);
+  const accessToken = jwtServices.sign(normalizeUser);
+  const refreshToken = jwtServices.signRefresh(normalizeUser);
 
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
@@ -153,7 +152,7 @@ const generateTokens = async (res, user) => {
   });
 
   res.send({
-    user: normilizeUser,
+    user: normalizeUser,
     accessToken,
   });
 };
@@ -215,6 +214,10 @@ const resetPassword = async (req, res) => {
   res.send({ message: 'Password successfully changed' });
 };
 
+const getProfile = (req, res) => {
+  res.send({ user: req.user });
+};
+
 export const authController = {
   registerUser,
   activateUser,
@@ -223,4 +226,5 @@ export const authController = {
   logout,
   forgot,
   resetPassword,
+  getProfile,
 };

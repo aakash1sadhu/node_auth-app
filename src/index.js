@@ -1,7 +1,7 @@
 import express from 'express';
 import authRouter from './router/auth.router.js';
 import userRouter from './router/user.router.js';
-import cookieParser from 'cookieParser';
+import cookieParser from 'cookie-parser';
 import { authMiddleware } from './middlewares/auth.mildware.js';
 
 const app = express();
